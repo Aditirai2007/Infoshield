@@ -1,0 +1,154 @@
+{
+  "model": "Logistic Regression",
+  "dataset_rows": 321,
+  "fake_rows": 189,
+  "genuine_rows": 132,
+  "train_rows": 182,
+  "test_rows": 139,
+  "split": "group-aware 75/25 (unseen templates in test)",
+  "test_metrics": {
+    "accuracy": 0.9928,
+    "precision": 1.0,
+    "recall": 0.9892,
+    "f1": 0.9946,
+    "roc_auc": 1.0,
+    "cv5_accuracy": 0.9907,
+    "cv5_f1": 0.992
+  },
+  "confusion_matrix": {
+    "tn": 46,
+    "fp": 0,
+    "fn": 1,
+    "tp": 92
+  },
+  "comparison": {
+    "Logistic Regression": {
+      "accuracy": 0.9928,
+      "precision": 1.0,
+      "recall": 0.9892,
+      "f1": 0.9946,
+      "roc_auc": 1.0,
+      "cv5_accuracy": 0.9907,
+      "cv5_f1": 0.992
+    },
+    "Linear SVM (calibrated)": {
+      "accuracy": 0.9928,
+      "precision": 1.0,
+      "recall": 0.9892,
+      "f1": 0.9946,
+      "roc_auc": 1.0,
+      "cv5_accuracy": 0.9907,
+      "cv5_f1": 0.992
+    },
+    "Multinomial Naive Bayes": {
+      "accuracy": 0.9856,
+      "precision": 1.0,
+      "recall": 0.9785,
+      "f1": 0.9891,
+      "roc_auc": 0.996,
+      "cv5_accuracy": 0.9844,
+      "cv5_f1": 0.9867
+    }
+  },
+  "top_fake_terms": [
+    [
+      "rs",
+      1.447
+    ],
+    [
+      "http",
+      1.089
+    ],
+    [
+      "at http",
+      0.657
+    ],
+    [
+      "will",
+      0.655
+    ],
+    [
+      "send",
+      0.617
+    ],
+    [
+      "first",
+      0.605
+    ],
+    [
+      "pay rs",
+      0.604
+    ],
+    [
+      "today",
+      0.595
+    ],
+    [
+      "now",
+      0.567
+    ],
+    [
+      "kyc",
+      0.559
+    ],
+    [
+      "10",
+      0.547
+    ],
+    [
+      "yojana",
+      0.543
+    ]
+  ],
+  "top_genuine_terms": [
+    [
+      "gov in",
+      -1.395
+    ],
+    [
+      "the",
+      -1.314
+    ],
+    [
+      "in",
+      -1.198
+    ],
+    [
+      "https",
+      -1.176
+    ],
+    [
+      "gov",
+      -1.092
+    ],
+    [
+      "not",
+      -0.831
+    ],
+    [
+      "do",
+      -0.628
+    ],
+    [
+      "do not",
+      -0.628
+    ],
+    [
+      "can",
+      -0.577
+    ],
+    [
+      "your otp",
+      -0.553
+    ],
+    [
+      "in पर",
+      -0.551
+    ],
+    [
+      "official",
+      -0.54
+    ]
+  ],
+  "note": "Synthetic/hand-written starter dataset. Metrics describe this dataset, not real-world traffic."
+}

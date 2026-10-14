@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfoShield v2.0 - AI Misinformation & Fake Government Scheme Verifier</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+          colors: {
+            saffron: { 50: '#fff7ed', 200: '#fed7aa', 300: '#fdba74', 400: '#ffaa4d', 500: '#FF9933', 600: '#e67e17', 700: '#cc6600', 800: '#9a3412' },
+            indiagreen: { 200: '#bbf7d0', 400: '#22a017', 500: '#138808', 600: '#0e6905', 700: '#0a4f03' },
+            chakra: { 200: '#c7d2fe', 500: '#000080', 600: '#000066', 700: '#00004d', 900: '#000033' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: linear-gradient(180deg,
+        rgba(255, 153, 51, 0.18) 0%,
+        rgba(255, 255, 255, 0.98) 45%,
+        rgba(255, 255, 255, 0.98) 55%,
+        rgba(19, 136, 8, 0.18) 100%);
+      background-attachment: fixed;
+    }
+    .badge-fake { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+    .badge-genuine { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+    .badge-verify { background: #fef3c7; color: #92400e; border: 1px solid #fbbf24; }
+    button:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid #FF9933; outline-offset: 2px; }
+  </style>
+</head>
+<body class="text-slate-800 font-sans min-h-screen flex flex-col selection:bg-saffron-500 selection:text-white">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="sticky top-0 z-50 bg-stone-900/95 backdrop-blur-md border-b border-stone-800 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-chakra-500 border border-saffron-500 flex items-center justify-center text-white shadow-md">
+            <i class="fa-solid fa-shield-halved text-xl text-saffron-400"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-xl tracking-tight text-white">InfoShield</span>
+              <span class="text-xs font-bold bg-saffron-500/20 text-saffron-400 border border-saffron-500/40 px-2 py-0.5 rounded-full uppercase">v2.0 National</span>
+            </div>
+            <p class="text-xs text-slate-300 hidden sm:block">AI Detection &amp; Evidence Verification Engine</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div id="apiDot" class="hidden sm:flex items-center gap-1.5 text-xs text-slate-300" title="Backend connection">
+            <span id="apiDotIcon" class="w-2.5 h-2.5 rounded-full bg-stone-500"></span>
+            <span id="apiDotText">Connecting...</span>
+          </div>
+          <div class="relative">
+            <select id="langSelect" onchange="changeLanguage()" aria-label="Language" class="bg-stone-800 border border-stone-700 text-slate-200 text-xs sm:text-sm rounded-lg pl-8 pr-6 py-2 appearance-none focus:outline-none focus:border-saffron-500 font-medium">
+              <option value="en">English (English)</option>
+              <option value="hi">Hindi (हिंदी)</option>
+              <option value="bn">Bengali (বাংলা)</option>
+              <option value="te">Telugu (తెలుగు)</option>
+              <option value="ta">Tamil (தமிழ்)</option>
+              <option value="mr">Marathi (मराठी)</option>
+            </select>
+            <i class="fa-solid fa-language text-slate-400 absolute left-2.5 top-3 text-xs pointer-events-none"></i>
+            <i class="fa-solid fa-chevron-down text-slate-500 absolute right-2 top-3 text-xs pointer-events-none"></i>
+          </div>
+          <button onclick="toggleModal('projectModal')" class="hidden sm:flex items-center gap-2 text-xs sm:text-sm bg-stone-800 hover:bg-stone-700 text-slate-200 border border-stone-700 px-3 py-2 rounded-lg transition-all font-medium">
+            <i class="fa-solid fa-graduation-cap text-saffron-400"></i>
+            <span>ABESIT Academic Credits</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ADVISORY TICKER -->
+  <div class="bg-saffron-500 border-b border-saffron-600 px-4 py-2 text-stone-900 text-xs sm:text-sm text-center font-semibold flex items-center justify-center gap-2 shadow-inner">
+    <i class="fa-solid fa-triangle-exclamation text-stone-900"></i>
+    <span>Government schemes never ask for registration fees, OTPs or passwords on WhatsApp.</span>
+    <a href="https://pib.gov.in" target="_blank" rel="noopener" class="underline font-bold text-stone-900 hover:text-white ml-1">PIB Fact Check</a>
+  </div>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+    <!-- HERO -->
+    <div class="text-center max-w-3xl mx-auto space-y-4">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-stone-900 text-saffron-400 border border-saffron-500/40 text-xs sm:text-sm font-semibold shadow-sm">
+        <i class="fa-solid fa-microchip text-indiagreen-400"></i>
+        <span>Detect &bull; Verify &bull; Explain &bull; Report</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-stone-900 tracking-tight leading-tight" id="heroTitle">
+        Verify Government Scheme Messages Before You Trust
+      </h1>
+      <p class="text-stone-600 text-sm sm:text-base leading-relaxed" id="heroSubtitle">
+        Check WhatsApp messages, social posts, screenshots or links. InfoShield combines a text classifier, scam-pattern rules, link checks and a verified scheme list, and explains every verdict.
+      </p>
+    </div>
+
+    <!-- BACKEND OFFLINE BANNER -->
+    <div id="offlineBanner" class="hidden max-w-4xl mx-auto bg-red-50 border border-red-300 text-red-800 rounded-xl p-4 text-sm">
+      <p class="font-bold"><i class="fa-solid fa-plug-circle-xmark mr-1"></i> Cannot reach the InfoShield backend.</p>
+      <p class="mt-1">Start it with <code class="bg-red-100 px-1.5 py-0.5 rounded">uvicorn main:app --reload</code> inside the <code class="bg-red-100 px-1.5 py-0.5 rounded">backend</code> folder, then open <code class="bg-red-100 px-1.5 py-0.5 rounded">http://localhost:8000</code>.</p>
+    </div>
+
+    <!-- MAIN VERIFIER CARD -->
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-xl overflow-hidden max-w-4xl mx-auto">
+
+      <div class="bg-stone-100 p-2 border-b border-stone-200 grid grid-cols-2 sm:grid-cols-4 gap-1.5" role="tablist">
+        <button id="tab-text" onclick="switchTab('text')" class="tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all bg-chakra-500 text-white shadow-md">
+          <i class="fa-solid fa-message text-saffron-400"></i> Text Analysis
+        </button>
+        <button id="tab-link" onclick="switchTab('link')" class="tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-all">
+          <i class="fa-solid fa-link"></i> URL Verifier
+        </button>
+        <button id="tab-image" onclick="switchTab('image')" class="tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-all">
+          <i class="fa-solid fa-file-image"></i> Screenshot OCR
+        </button>
+        <button id="tab-builder" onclick="switchTab('builder')" class="tab-btn flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold text-saffron-700 hover:bg-stone-200 transition-all border border-saffron-500/40">
+          <i class="fa-solid fa-flask"></i> Scam Simulator
+        </button>
+      </div>
+
+      <div class="p-6 sm:p-8 space-y-6">
+
+        <!-- QUICK TESTS -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs sm:text-sm text-stone-600 font-semibold">
+            <span><i class="fa-solid fa-bolt text-saffron-600 mr-1"></i> Quick test messages:</span>
+            <span class="text-stone-400 font-normal">Click to load</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <button onclick="loadPreset('fake')" class="text-left p-3 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 transition-all">
+              <div class="text-xs sm:text-sm font-bold text-red-700">🔴 Free Laptop Fee Trap</div>
+              <p class="text-xs text-stone-600 truncate mt-1">PM Laptop Scheme: Pay ₹499 fee...</p>
+            </button>
+            <button onclick="loadPreset('genuine')" class="text-left p-3 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 transition-all">
+              <div class="text-xs sm:text-sm font-bold text-emerald-800">🟢 Official PM Awas Yojana</div>
+              <p class="text-xs text-stone-600 truncate mt-1">Apply on pmaymis.gov.in...</p>
+            </button>
+            <button onclick="loadPreset('unverified')" class="text-left p-3 rounded-xl border border-amber-200 bg-amber-50 hover:bg-amber-100 transition-all">
+              <div class="text-xs sm:text-sm font-bold text-amber-800">🟡 Viral Forward (no source)</div>
+              <p class="text-xs text-stone-600 truncate mt-1">All SIM cards will be blocked...</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- TEXT -->
+        <div id="panel-text" class="input-panel space-y-2">
+          <label for="inputText" class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-stone-700">Paste WhatsApp message or social post</label>
+          <textarea id="inputText" rows="5" maxlength="5000" placeholder="e.g. 'Urgent! PM Free Laptop Scheme 2026: All college students get a free HP laptop. Click http://pmscheme-laptop.site and pay Rs. 499 processing fee today!'" class="w-full rounded-xl bg-stone-50 border border-stone-300 p-4 text-sm sm:text-base text-stone-800 placeholder-stone-400 focus:outline-none focus:border-chakra-500 focus:ring-1 focus:ring-chakra-500 transition-all"></textarea>
+        </div>
+
+        <!-- LINK -->
+        <div id="panel-link" class="input-panel hidden space-y-2">
+          <label for="inputLink" class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-stone-700">Enter a web link</label>
+          <input type="text" id="inputLink" placeholder="e.g. http://pmscheme-free-laptop.tech/apply" class="w-full bg-stone-50 border border-stone-300 rounded-xl px-4 py-3 text-sm sm:text-base text-stone-800 focus:outline-none focus:border-chakra-500">
+          <p class="text-xs text-stone-500">InfoShield inspects the link itself (domain, extension, look-alike names). It does not open the website.</p>
+        </div>
+
+        <!-- IMAGE -->
+        <div id="panel-image" class="input-panel hidden space-y-2">
+          <label class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-stone-700">Upload a screenshot (text is read with OCR on the server)</label>
+          <div id="dropZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-stone-300 hover:border-chakra-500 bg-stone-50 rounded-xl p-6 text-center cursor-pointer transition-all">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl text-chakra-500 mb-2"></i>
+            <p class="text-sm font-semibold text-stone-800">Click or drop a screenshot here</p>
+            <p class="text-xs text-stone-500 mt-1">PNG or JPG, up to 8 MB</p>
+            <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
+          </div>
+          <div id="imagePreviewContainer" class="hidden p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-2">
+            <div class="flex items-center gap-4">
+              <img id="imagePreview" alt="Selected screenshot" class="w-14 h-14 object-cover rounded-lg">
+              <div>
+                <p class="text-xs sm:text-sm font-bold text-stone-800" id="imageFileName">screenshot.png</p>
+                <p class="text-xs text-stone-500" id="imageStatus">Ready. Press the scan button to extract and analyse the text.</p>
+              </div>
+            </div>
+            <div id="ocrTextBox" class="hidden text-xs text-stone-700 bg-white border border-stone-200 rounded-lg p-3">
+              <p class="font-bold text-stone-600 mb-1">Text read from the screenshot:</p>
+              <p id="ocrText" class="whitespace-pre-wrap"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIMULATOR -->
+        <div id="panel-builder" class="input-panel hidden space-y-4 bg-saffron-50/50 p-5 rounded-xl border border-saffron-200">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-saffron-800"><i class="fa-solid fa-sliders mr-1"></i> Scam message generator</h4>
+            <span class="text-xs bg-saffron-200 text-saffron-800 px-2.5 py-0.5 rounded border border-saffron-300 font-semibold">Testing workbench</span>
+          </div>
+          <p class="text-xs text-stone-600">Build a message from typical scam ingredients, load it, then scan it to see which ingredient raises the score.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+            <div>
+              <label for="simScheme" class="text-stone-700 font-semibold">Scheme name:</label>
+              <select id="simScheme" class="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-stone-800 mt-1">
+                <option value="PM Free Laptop Scheme 2026">PM Free Laptop Scheme</option>
+                <option value="Direct Student Cash Grant">Direct Student Cash Grant</option>
+                <option value="PM Awas Yojana">PM Awas Yojana (real scheme)</option>
+              </select>
+            </div>
+            <div>
+              <label for="simDomain" class="text-stone-700 font-semibold">Link ending:</label>
+              <select id="simDomain" class="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-stone-800 mt-1">
+                <option value=".site">.site (high risk)</option>
+                <option value=".tech">.tech (suspicious)</option>
+                <option value=".gov.in">.gov.in (official)</option>
+              </select>
+            </div>
+            <div>
+              <label for="simFee" class="text-stone-700 font-semibold">Money asked:</label>
+              <select id="simFee" class="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-stone-800 mt-1">
+                <option value="Pay Rs 499 registration fee">₹499 processing fee</option>
+                <option value="Pay Rs 1200 security deposit">₹1200 security deposit</option>
+                <option value="No fee required">No fee required</option>
+              </select>
+            </div>
+            <div>
+              <label for="simUrgency" class="text-stone-700 font-semibold">Pressure tactic:</label>
+              <select id="simUrgency" class="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-stone-800 mt-1">
+                <option value="Urgent! Offer expires at midnight!">Urgent / midnight expiry</option>
+                <option value="Apply now before seats fill!">Seat limit pressure</option>
+                <option value="Here is the official information.">No pressure</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="buildSimulatedMessage()" class="w-full py-2.5 bg-saffron-500 hover:bg-saffron-600 text-stone-900 font-extrabold text-xs sm:text-sm rounded-xl transition-all shadow">
+            Generate and load message
+          </button>
+        </div>
+
+        <button id="scanBtn" onclick="runAiScan()" class="w-full py-4 rounded-xl bg-chakra-500 hover:bg-chakra-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-extrabold text-base sm:text-lg shadow-xl flex items-center justify-center gap-3 transition-all transform active:scale-[0.99]">
+          <i class="fa-solid fa-microchip text-saffron-400 text-lg"></i>
+          <span id="scanBtnText">Run AI Scan &amp; Verification</span>
+        </button>
+
+        <p id="errorBox" class="hidden text-sm font-semibold text-red-700 bg-red-50 border border-red-200 rounded-xl p-3"></p>
+      </div>
+    </div>
+
+    <!-- SCANNING STATUS -->
+    <div id="scanningStatus" class="hidden max-w-xl mx-auto bg-white p-6 rounded-2xl border border-stone-200 text-center space-y-4 shadow-lg" aria-live="polite">
+      <div class="relative w-16 h-16 mx-auto flex items-center justify-center">
+        <div class="w-12 h-12 rounded-full bg-chakra-500 text-white flex items-center justify-center animate-spin">
+          <i class="fa-solid fa-spinner text-2xl text-saffron-400"></i>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-sm sm:text-base font-bold text-stone-800" id="scanStepText">Reading the message...</h3>
+        <p class="text-xs sm:text-sm text-stone-500 mt-1">Running classifier, scam rules, link checks and scheme lookup</p>
+      </div>
+      <div class="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+        <div id="scanProgressBar" class="bg-chakra-500 h-full w-1/4 transition-all duration-300"></div>
+      </div>
+    </div>
+
+    <!-- RESULT DASHBOARD -->
+    <div id="resultDashboard" class="hidden max-w-5xl mx-auto space-y-6">
+
+      <div id="verdictCard" class="rounded-2xl p-6 sm:p-8 border shadow-xl transition-all">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-white/30 backdrop-blur-md flex items-center justify-center text-3xl shrink-0">
+              <i id="verdictIcon" class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+              <div id="verdictBadge" class="inline-block px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-1.5"></div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight" id="verdictTitle"></h2>
+              <p class="text-xs sm:text-sm opacity-90 mt-1" id="verdictSubtitle"></p>
+            </div>
+          </div>
+          <div class="bg-black/20 backdrop-blur-md border border-white/30 rounded-2xl p-4 text-center min-w-[130px] self-stretch sm:self-auto flex flex-col justify-center">
+            <span class="text-3xl font-black" id="riskScore">0%</span>
+            <span class="text-xs font-bold uppercase tracking-wider opacity-80">Risk score</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white rounded-2xl p-6 border border-stone-200 shadow-md space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
+              <i class="fa-solid fa-flag text-red-500 text-base"></i><span>What InfoShield found</span>
+            </h3>
+            <div id="redFlagsList" class="space-y-3"></div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-stone-200 shadow-md space-y-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
+              <i class="fa-solid fa-brain text-chakra-500 text-base"></i><span>Why this verdict</span>
+            </h3>
+            <p id="aiExplanation" class="text-sm text-stone-700 leading-relaxed"></p>
+            <p id="engineNote" class="text-xs text-stone-500"></p>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-stone-200 shadow-md space-y-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
+              <i class="fa-solid fa-chart-column text-saffron-600 text-base"></i><span>Risk by component</span>
+            </h3>
+            <div class="h-52 w-full"><canvas id="riskChart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div id="schemeCard" class="bg-white rounded-2xl p-6 border border-stone-200 shadow-md space-y-3">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
+              <i class="fa-solid fa-scale-balanced text-chakra-500 text-base"></i><span>Scheme database check</span>
+            </h3>
+            <div id="schemeBody" class="text-sm text-stone-700 space-y-2"></div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-stone-200 shadow-md space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
+              <i class="fa-solid fa-building-columns text-indiagreen-600 text-base"></i><span>Verify on official portals</span>
+            </h3>
+            <div class="space-y-3">
+              <a href="https://www.myscheme.gov.in" target="_blank" rel="noopener" class="block p-3.5 rounded-xl bg-stone-50 border border-stone-200 hover:border-chakra-500 transition-all">
+                <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-stone-800"><span>myScheme (Govt of India)</span><i class="fa-solid fa-arrow-up-right-from-square text-chakra-500"></i></div>
+                <p class="text-xs text-stone-500 mt-1">Find genuine schemes</p>
+              </a>
+              <a href="https://pib.gov.in/factcheck.aspx" target="_blank" rel="noopener" class="block p-3.5 rounded-xl bg-stone-50 border border-stone-200 hover:border-chakra-500 transition-all">
+                <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-stone-800"><span>PIB Fact Check</span><i class="fa-solid fa-arrow-up-right-from-square text-chakra-500"></i></div>
+                <p class="text-xs text-stone-500 mt-1">Official misinformation checks</p>
+              </a>
+              <a href="https://cybercrime.gov.in" target="_blank" rel="noopener" class="block p-3.5 rounded-xl bg-stone-50 border border-stone-200 hover:border-chakra-500 transition-all">
+                <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-stone-800"><span>Report cyber fraud</span><i class="fa-solid fa-arrow-up-right-from-square text-chakra-500"></i></div>
+                <p class="text-xs text-stone-500 mt-1">cybercrime.gov.in or call 1930</p>
+              </a>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-6 border border-stone-200 shadow-md space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-stone-600 flex items-center gap-2">
+              <i class="fa-solid fa-user-shield text-saffron-600 text-base"></i><span>What to do now</span>
+            </h3>
+            <ul id="actionsList" class="text-sm text-stone-700 space-y-1.5 list-disc pl-5"></ul>
+
+            <button onclick="shareWarningOnWhatsApp()" class="w-full py-3.5 rounded-xl bg-indiagreen-500 hover:bg-indiagreen-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md">
+              <i class="fa-brands fa-whatsapp text-lg"></i><span>Share a safety warning on WhatsApp</span>
+            </button>
+
+            <div class="space-y-2">
+              <label for="reportRegion" class="text-xs font-semibold text-stone-600">Your state / city (for the community log)</label>
+              <input id="reportRegion" type="text" maxlength="80" placeholder="e.g. Uttar Pradesh" class="w-full bg-stone-50 border border-stone-300 rounded-lg px-3 py-2 text-sm">
+              <button onclick="reportScamToCommunity()" class="w-full py-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all border border-stone-300">
+                <i class="fa-solid fa-flag text-saffron-600 text-base"></i><span>Save to community scam log</span>
+              </button>
+              <p id="reportMsg" class="hidden text-xs font-semibold text-indiagreen-600"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMUNITY LOG -->
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-md p-6 sm:p-8 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-extrabold text-stone-900 flex items-center gap-2">
+            <i class="fa-solid fa-tower-broadcast text-chakra-500"></i> Community scam log
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-500 mt-0.5">Messages saved by users of this system. Rows marked "sample" are demo entries.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="statsChip" class="text-xs bg-stone-100 text-stone-700 border border-stone-300 rounded-lg px-3 py-2 font-semibold">0 scans</span>
+          <button onclick="exportScamReportCSV()" class="text-xs sm:text-sm bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold px-3.5 py-2 rounded-lg border border-stone-300 flex items-center gap-2 transition-all">
+            <i class="fa-solid fa-download text-chakra-500"></i> Export log (CSV)
+          </button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm text-stone-700">
+          <thead class="bg-stone-100 text-stone-600 uppercase font-bold tracking-wider border-b border-stone-200 text-xs">
+            <tr><th class="p-3.5">When</th><th class="p-3.5">Message / scheme</th><th class="p-3.5">Region</th><th class="p-3.5">Risk</th><th class="p-3.5">Status</th></tr>
+          </thead>
+          <tbody id="scamTableBody" class="divide-y divide-stone-200">
+            <tr><td colspan="5" class="p-4 text-stone-400">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MODEL EVALUATION -->
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-md p-6 sm:p-8 space-y-5">
+      <div>
+        <h2 class="text-xl font-extrabold text-stone-900 flex items-center gap-2"><i class="fa-solid fa-chart-line text-indiagreen-600"></i> Model evaluation</h2>
+        <p class="text-xs sm:text-sm text-stone-500 mt-0.5" id="modelSub">Loading evaluation results...</p>
+      </div>
+      <div id="modelGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+      <p id="modelNote" class="text-xs text-stone-500"></p>
+    </div>
+
+    <!-- SDG -->
+    <div class="bg-white rounded-2xl border border-stone-200 shadow-md p-6 sm:p-8 space-y-6">
+      <div class="text-center max-w-2xl mx-auto space-y-1">
+        <h2 class="text-xl font-extrabold text-stone-900">UN Sustainable Development Goals alignment</h2>
+        <p class="text-xs sm:text-sm text-stone-500">How InfoShield supports key development targets</p>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 text-center">
+        <div class="p-4 rounded-xl bg-stone-50 border border-amber-200 space-y-2">
+          <div class="w-10 h-10 rounded-lg bg-amber-500 text-white font-black text-sm flex items-center justify-center mx-auto shadow">4</div>
+          <p class="text-xs sm:text-sm font-bold text-stone-800">Quality Education</p>
+          <p class="text-xs text-stone-500 leading-tight">Digital literacy and scam awareness</p>
+        </div>
+        <div class="p-4 rounded-xl bg-stone-50 border border-orange-200 space-y-2">
+          <div class="w-10 h-10 rounded-lg bg-orange-600 text-white font-black text-sm flex items-center justify-center mx-auto shadow">9</div>
+          <p class="text-xs sm:text-sm font-bold text-stone-800">Industry &amp; Innovation</p>
+          <p class="text-xs text-stone-500 leading-tight">AI and NLP for public good</p>
+        </div>
+        <div class="p-4 rounded-xl bg-stone-50 border border-purple-200 space-y-2">
+          <div class="w-10 h-10 rounded-lg bg-purple-600 text-white font-black text-sm flex items-center justify-center mx-auto shadow">10</div>
+          <p class="text-xs sm:text-sm font-bold text-stone-800">Reduced Inequalities</p>
+          <p class="text-xs text-stone-500 leading-tight">Access in regional languages</p>
+        </div>
+        <div class="p-4 rounded-xl bg-stone-50 border border-chakra-200 space-y-2">
+          <div class="w-10 h-10 rounded-lg bg-chakra-500 text-white font-black text-sm flex items-center justify-center mx-auto shadow">16</div>
+          <p class="text-xs sm:text-sm font-bold text-stone-800">Strong Institutions</p>
+          <p class="text-xs text-stone-500 leading-tight">Trust between citizens and government</p>
+        </div>
+        <div class="p-4 rounded-xl bg-stone-50 border border-indiagreen-200 space-y-2 col-span-2 sm:col-span-1">
+          <div class="w-10 h-10 rounded-lg bg-indiagreen-500 text-white font-black text-sm flex items-center justify-center mx-auto shadow">17</div>
+          <p class="text-xs sm:text-sm font-bold text-stone-800">Partnerships</p>
+          <p class="text-xs text-stone-500 leading-tight">Works with official portals</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-stone-900 border-t border-stone-800 text-stone-400 text-xs sm:text-sm py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <p class="font-bold text-stone-200">InfoShield - Mini Project ID: 2026-27CSEMPID003</p>
+          <p class="mt-0.5 text-stone-400">Department of Computer Science &amp; Engineering | ABES Institute of Technology, Ghaziabad</p>
+        </div>
+        <div class="text-right">
+          <p class="font-semibold text-stone-300">Project Team Members:</p>
+          <p class="text-stone-400">Aakansha Sharma &bull; Aadrika &bull; Aditi Rai</p>
+        </div>
+      </div>
+      <div class="pt-4 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500">
+        <p>Affiliated to Dr. A.P.J. Abdul Kalam Technical University (AKTU) &bull; Academic Session 2026-27</p>
+        <p class="mt-1 sm:mt-0">Verify. Trust. Share responsibly.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL -->
+  <div id="projectModal" class="fixed inset-0 bg-stone-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white border border-stone-300 rounded-2xl max-w-md w-full p-6 space-y-6 shadow-2xl relative text-stone-800">
+      <button onclick="toggleModal('projectModal')" aria-label="Close" class="absolute right-4 top-4 text-stone-400 hover:text-stone-800 text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-chakra-500 text-white flex items-center justify-center text-2xl font-bold"><i class="fa-solid fa-shield-halved text-saffron-400"></i></div>
+        <div>
+          <h3 class="text-lg font-extrabold text-stone-900">InfoShield v2.0</h3>
+          <p class="text-xs sm:text-sm text-saffron-600 font-semibold">Mini Project ID: 2026-27CSEMPID003</p>
+        </div>
+      </div>
+      <div class="space-y-3 text-xs sm:text-sm text-stone-600 border-t border-b border-stone-200 py-4">
+        <div class="flex justify-between"><span class="font-semibold text-stone-500">Institution:</span><span class="text-stone-900 font-medium">ABES Institute of Technology</span></div>
+        <div class="flex justify-between"><span class="font-semibold text-stone-500">Department:</span><span class="text-stone-900 font-medium">Computer Science &amp; Engineering</span></div>
+        <div class="flex justify-between"><span class="font-semibold text-stone-500">Affiliation:</span><span class="text-stone-900 font-medium">AKTU Lucknow</span></div>
+        <div class="flex justify-between"><span class="font-semibold text-stone-500">Session:</span><span class="text-stone-900 font-medium">2026-2027</span></div>
+        <div class="flex justify-between"><span class="font-semibold text-stone-500">Team Members:</span><span class="text-stone-900 font-medium text-right">Aakansha Sharma<br>Aadrika<br>Aditi Rai</span></div>
+      </div>
+      <button onclick="toggleModal('projectModal')" class="w-full py-2.5 bg-stone-800 hover:bg-stone-900 text-white font-bold text-xs sm:text-sm rounded-xl transition-all">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // When opened directly from disk (file://), talk to the local server; otherwise use the same origin.
+    const API = location.protocol === 'file:' ? 'http://localhost:8000' : '';
+    let activeTab = 'text';
+    let riskChartInstance = null;
+    let selectedFile = null;
+    let lastResult = null;
+    let lastInputText = '';
+
+    const presets = {
+      fake: "Urgent! PM Free Laptop Scheme 2026: All college students are eligible to receive a free HP laptop. Click http://pmscheme-laptop.site and pay Rs. 499 processing fee to claim today!",
+      genuine: "Under PM Awas Yojana (PMAY-U), eligible urban beneficiaries can apply directly through the official portal. Visit https://pmaymis.gov.in for criteria. No fee required.",
+      unverified: "Alert: All SIM cards will be blocked from tomorrow unless you forward this message to 10 contacts."
+    };
+
+    const I18N = {
+      en: { title: "Verify Government Scheme Messages Before You Trust",
+            sub: "Check WhatsApp messages, social posts, screenshots or links. InfoShield combines a text classifier, scam-pattern rules, link checks and a verified scheme list, and explains every verdict.",
+            btn: "Run AI Scan & Verification" },
+      hi: { title: "भरोसा करने से पहले सरकारी योजना संदेशों की पुष्टि करें",
+            sub: "व्हाट्सऐप संदेश, सोशल पोस्ट, स्क्रीनशॉट या लिंक जांचें। InfoShield टेक्स्ट क्लासिफायर, स्कैम-पैटर्न नियम, लिंक जांच और सत्यापित योजना सूची को मिलाकर हर निर्णय की वजह बताता है।",
+            btn: "AI स्कैन चलाएं और जांचें" },
+      bn: { title: "বিশ্বাস করার আগে সরকারি স্কিম বার্তা যাচাই করুন" },
+      te: { title: "నమ్మడానికి ముందు ప్రభుత్వ పథకాల సందేశాలను తనిఖీ చేయండి" },
+      ta: { title: "நம்புவதற்கு முன் அரசு திட்ட செய்திகளை சரிபார்க்கவும்" },
+      mr: { title: "विश्वास ठेवण्यापूर्वी सरकारी योजना संदेश तपासा" }
+    };
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
+
+    function switchTab(tab) {
+      activeTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-chakra-500', 'text-white', 'shadow-md');
+        if (btn.id !== 'tab-builder') btn.classList.add('text-stone-600');
+      });
+      document.querySelectorAll('.input-panel').forEach(p => p.classList.add('hidden'));
+      const activeBtn = document.getElementById('tab-' + tab);
+      activeBtn.classList.add('bg-chakra-500', 'text-white', 'shadow-md');
+      activeBtn.classList.remove('text-stone-600', 'text-saffron-700');
+      if (tab !== 'builder') document.getElementById('tab-builder').classList.add('text-saffron-700');
+      document.getElementById('panel-' + tab).classList.remove('hidden');
+      hideError();
+    }
+
+    function loadPreset(type) { switchTab('text'); document.getElementById('inputText').value = presets[type]; }
+
+    function changeLanguage() {
+      const l = I18N[document.getElementById('langSelect').value];
+      document.getElementById('heroTitle').innerText = l.title || I18N.en.title;
+      document.getElementById('heroSubtitle').innerText = l.sub || I18N.en.sub;
+      document.getElementById('scanBtnText').innerText = l.btn || I18N.en.btn;
+    }
+
+    // ---------- screenshot handling ----------
+    function setFile(file) {
+      if (!file) return;
+      selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('imagePreview').src = e.target.result;
+        document.getElementById('imageFileName').innerText = file.name;
+        document.getElementById('imageStatus').innerText = 'Ready. Press the scan button to extract and analyse the text.';
+        document.getElementById('ocrTextBox').classList.add('hidden');
+        document.getElementById('imagePreviewContainer').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+    function handleImageUpload(e) { setFile(e.target.files[0]); }
+    const dz = document.getElementById('dropZone');
+    ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('border-chakra-500'); }));
+    ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('border-chakra-500'); }));
+    dz.addEventListener('drop', e => setFile(e.dataTransfer.files[0]));
+
+    function buildSimulatedMessage() {
+      const scheme = document.getElementById('simScheme').value;
+      const domain = document.getElementById('simDomain').value;
+      const fee = document.getElementById('simFee').value;
+      const urgency = document.getElementById('simUrgency').value;
+      const host = scheme.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      switchTab('text');
+      document.getElementById('inputText').value = `${urgency} ${scheme}! Click http://${host}${domain} to register. ${fee}.`;
+    }
+
+    // ---------- errors ----------
+    function showError(msg) { const b = document.getElementById('errorBox'); b.innerText = msg; b.classList.remove('hidden'); }
+    function hideError() { document.getElementById('errorBox').classList.add('hidden'); }
+
+    // ---------- scan ----------
+    async function runAiScan() {
+      hideError();
+      const statusBox = document.getElementById('scanningStatus');
+      const dashboard = document.getElementById('resultDashboard');
+      const btn = document.getElementById('scanBtn');
+      const stepText = document.getElementById('scanStepText');
+      const bar = document.getElementById('scanProgressBar');
+
+      let url, options, inputText = '';
+      if (activeTab === 'link') {
+        inputText = document.getElementById('inputLink').value.trim();
+        if (!inputText) return showError('Enter a link to check.');
+        url = API + '/api/analyze-url';
+        options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: inputText }) };
+      } else if (activeTab === 'image') {
+        if (!selectedFile) return showError('Choose a screenshot first.');
+        const fd = new FormData(); fd.append('file', selectedFile);
+        url = API + '/api/analyze-image'; options = { method: 'POST', body: fd };
+      } else {
+        inputText = document.getElementById('inputText').value.trim();
+        if (!inputText) return showError('Paste a message first, or load one of the quick test messages.');
+        url = API + '/api/analyze';
+        options = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: inputText }) };
+      }
+
+      dashboard.classList.add('hidden');
+      statusBox.classList.remove('hidden');
+      btn.disabled = true;
+      const steps = activeTab === 'image'
+        ? ['Reading text from the screenshot...', 'Checking links and scam patterns...', 'Comparing with the verified scheme list...']
+        : ['Reading the message...', 'Checking links and scam patterns...', 'Comparing with the verified scheme list...'];
+      let i = 0; stepText.innerText = steps[0]; bar.style.width = '25%';
+      const timer = setInterval(() => { i = Math.min(i + 1, steps.length - 1); stepText.innerText = steps[i]; bar.style.width = (25 + i * 30) + '%'; }, 600);
+
+      try {
+        const res = await fetch(url, options);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.detail || 'The server could not analyse this input.');
+        lastResult = data;
+        lastInputText = data.extracted_text || inputText;
+        if (activeTab === 'image' && data.extracted_text) {
+          document.getElementById('ocrText').innerText = data.extracted_text;
+          document.getElementById('ocrTextBox').classList.remove('hidden');
+          document.getElementById('imageStatus').innerText = 'Text extracted and analysed.';
+        }
+        renderDashboardResults(data);
+        dashboard.classList.remove('hidden');
+        dashboard.scrollIntoView({ behavior: 'smooth' });
+        setOnline(true);
+        loadStats();
+      } catch (err) {
+        if (err instanceof TypeError) { setOnline(false); showError('Cannot reach the backend. Start the server and try again.'); }
+        else showError(err.message);
+      } finally {
+        clearInterval(timer);
+        statusBox.classList.add('hidden');
+        btn.disabled = false;
+      }
+    }
+
+    const VERDICT_STYLE = {
+      fake: { card: 'bg-red-600 text-white border-red-700', badge: 'bg-red-900/40 text-red-100 border border-red-400/40', icon: 'fa-solid fa-triangle-exclamation',
+              badgeText: 'Likely fake', title: 'High-risk scheme fraud or misinformation', sub: 'Do not click links, pay money or share OTPs.' },
+      verify: { card: 'bg-amber-500 text-stone-900 border-amber-600', badge: 'bg-stone-900/20 text-stone-900 border border-stone-900/30', icon: 'fa-solid fa-magnifying-glass',
+              badgeText: 'Needs verification', title: 'Unverified message', sub: 'Mixed signals. Confirm on an official source before trusting or forwarding.' },
+      genuine: { card: 'bg-emerald-600 text-white border-emerald-700', badge: 'bg-emerald-900/40 text-emerald-100 border border-emerald-400/40', icon: 'fa-solid fa-circle-check',
+              badgeText: 'Likely genuine', title: 'No strong scam signals found', sub: 'Still apply only through the official portal.' }
+    };
+
+    function renderDashboardResults(d) {
+      const s = VERDICT_STYLE[d.verdict] || VERDICT_STYLE.verify;
+      document.getElementById('verdictCard').className = 'rounded-2xl p-6 sm:p-8 border shadow-xl transition-all ' + s.card;
+      const badge = document.getElementById('verdictBadge');
+      badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-1.5 ' + s.badge;
+      badge.innerText = s.badgeText;
+      document.getElementById('verdictTitle').innerText = s.title;
+      document.getElementById('verdictSubtitle').innerText = s.sub;
+      document.getElementById('verdictIcon').className = s.icon;
+      document.getElementById('riskScore').innerText = d.risk + '%';
+
+      // flags (+ positive evidence)
+      const list = document.getElementById('redFlagsList');
+      let html = '';
+      (d.flags || []).forEach(f => {
+        const high = f.level === 'high';
+        const box = high ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200';
+        const ico = high ? 'fa-triangle-exclamation text-red-600' : 'fa-circle-exclamation text-amber-700';
+        const tc = high ? 'text-red-900' : 'text-amber-900';
+        html += `<div class="p-3.5 rounded-xl border ${box} flex items-start gap-3">
+          <i class="fa-solid ${ico} text-sm sm:text-base mt-0.5"></i>
+          <div><p class="text-xs sm:text-sm font-bold ${tc}">${esc(f.title)}</p>
+          <p class="text-xs text-stone-600 mt-0.5">${esc(f.detail)}</p></div></div>`;
+      });
+      (d.urls || []).filter(u => u.is_official).forEach(u => {
+        html += `<div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
+          <i class="fa-solid fa-circle-check text-indiagreen-600 text-sm sm:text-base mt-0.5"></i>
+          <div><p class="text-xs sm:text-sm font-bold text-emerald-900">Official domain: ${esc(u.host)}</p>
+          <p class="text-xs text-stone-600 mt-0.5">${esc(u.findings[0] || '')}</p></div></div>`;
+      });
+      if (!html) html = '<p class="text-sm text-stone-500">No red flags were detected in this input.</p>';
+      list.innerHTML = html;
+
+      document.getElementById('aiExplanation').innerText = d.explanation || '';
+      document.getElementById('engineNote').innerText = 'Engine: ' + (d.engine || '') + (d.ml_probability != null ? ` | classifier ${d.ml_probability}% | rules ${d.rule_score}%` : '');
+
+      // scheme card
+      const sb = document.getElementById('schemeBody');
+      const sc = d.scheme || {};
+      if (sc.status === 'verified_match') {
+        sb.innerHTML = `<p class="font-bold text-stone-900">${esc(sc.name)}</p>
+          <p class="text-xs text-stone-500">${esc(sc.ministry)}</p>
+          <p>${esc(sc.benefit)}</p>
+          <a href="${esc(sc.official_url)}" target="_blank" rel="noopener" class="inline-block text-xs font-bold text-chakra-500 underline">Official: ${esc(sc.official_url)}</a>`;
+      } else if (sc.status === 'claimed_not_found') {
+        sb.innerHTML = `<p><span class="font-bold">"${esc(sc.claimed)}"</span> is not in InfoShield's verified scheme list.</p>
+          <p class="text-xs text-stone-500">That alone does not prove it is fake (the list is limited). Search the name on myscheme.gov.in.</p>`;
+      } else {
+        sb.innerHTML = '<p class="text-stone-500">No specific scheme name was recognised in the text.</p>';
+      }
+
+      document.getElementById('actionsList').innerHTML = (d.safe_actions || []).map(a => `<li>${esc(a)}</li>`).join('');
+      document.getElementById('reportMsg').classList.add('hidden');
+      updateChart(d.breakdown);
+    }
+
+    function updateChart(b) {
+      if (!b || typeof Chart === 'undefined') return;   // chart is optional: never block the verdict if the CDN is unreachable
+      const ctx = document.getElementById('riskChart').getContext('2d');
+      if (riskChartInstance) riskChartInstance.destroy();
+      const colour = v => v >= 60 ? '#dc2626' : v >= 35 ? '#FF9933' : '#138808';
+      riskChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: b.labels, datasets: [{ label: 'Risk (%)', data: b.values, backgroundColor: b.values.map(colour), borderRadius: 6 }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, max: 100, ticks: { color: '#57534e', font: { size: 11 } }, grid: { color: '#e7e5e4' } },
+            x: { ticks: { color: '#57534e', font: { size: 11 } }, grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    function shareWarningOnWhatsApp() {
+      const text = encodeURIComponent("⚠️ InfoShield alert: Beware of fake government scheme messages that ask for fees, OTPs or non .gov.in links. Verify at myscheme.gov.in before you trust or forward!");
+      window.open('https://api.whatsapp.com/send?text=' + text, '_blank');
+    }
+
+    async function reportScamToCommunity() {
+      if (!lastResult) return;
+      const msg = document.getElementById('reportMsg');
+      const title = (lastResult.scheme && lastResult.scheme.name) || (lastResult.scheme && lastResult.scheme.claimed) || lastInputText.slice(0, 90) || 'Reported message';
+      try {
+        const res = await fetch(API + '/api/report', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, region: document.getElementById('reportRegion').value.trim() || 'Not specified', risk: lastResult.risk, verdict: lastResult.verdict })
+        });
+        if (!res.ok) throw new Error();
+        msg.innerText = 'Saved to the community log.'; msg.classList.remove('hidden');
+        loadReports();
+      } catch { msg.innerText = 'Could not save. Is the backend running?'; msg.classList.remove('hidden'); msg.classList.replace('text-indiagreen-600', 'text-red-700'); }
+    }
+
+    function exportScamReportCSV() { window.location.href = API + '/api/reports/export'; }
+
+    // ---------- live data ----------
+    function ago(iso) {
+      const t = new Date(iso); const m = Math.round((Date.now() - t.getTime()) / 60000);
+      if (isNaN(m)) return '';
+      if (m < 1) return 'Just now'; if (m < 60) return m + ' min ago';
+      if (m < 1440) return Math.round(m / 60) + ' h ago';
+      return t.toLocaleDateString();
+    }
+    async function loadReports() {
+      try {
+        const rows = await (await fetch(API + '/api/reports')).json();
+        const cls = { fake: 'badge-fake', verify: 'badge-verify', genuine: 'badge-genuine' };
+        document.getElementById('scamTableBody').innerHTML = rows.map(r => `
+          <tr class="hover:bg-stone-50">
+            <td class="p-3.5 text-stone-500 whitespace-nowrap">${esc(ago(r.ts))}</td>
+            <td class="p-3.5 font-bold text-stone-900">${esc(r.title)}${r.is_sample ? ' <span class="text-xs font-normal text-stone-400">(sample)</span>' : ''}</td>
+            <td class="p-3.5 text-stone-600">${esc(r.region)}</td>
+            <td class="p-3.5"><span class="px-2.5 py-1 rounded ${cls[r.verdict] || 'badge-verify'} text-xs font-extrabold">${Math.round(r.risk)}% risk</span></td>
+            <td class="p-3.5 text-stone-700">${esc(r.status)}</td>
+          </tr>`).join('') || '<tr><td colspan="5" class="p-4 text-stone-400">No entries yet.</td></tr>';
+        setOnline(true);
+      } catch { setOnline(false); document.getElementById('scamTableBody').innerHTML = '<tr><td colspan="5" class="p-4 text-red-700">Backend not reachable.</td></tr>'; }
+    }
+    async function loadStats() {
+      try { const s = await (await fetch(API + '/api/stats')).json(); document.getElementById('statsChip').innerText = s.scans_total + ' scans | ' + s.citizen_reports + ' reports'; } catch {}
+    }
+    async function loadModelInfo() {
+      try {
+        const m = await (await fetch(API + '/api/model-info')).json();
+        if (m.error) { document.getElementById('modelSub').innerText = m.error; return; }
+        const t = m.test_metrics, c = m.confusion_matrix, pct = v => (v * 100).toFixed(1) + '%';
+        document.getElementById('modelSub').innerText = `${m.model} on ${m.dataset_rows} labelled messages (${m.test_rows} held-out for testing, ${m.split}).`;
+        const card = (label, val) => `<div class="p-4 rounded-xl bg-stone-50 border border-stone-200 text-center"><p class="text-2xl font-black text-chakra-500">${val}</p><p class="text-xs font-semibold text-stone-600 mt-1">${label}</p></div>`;
+        document.getElementById('modelGrid').innerHTML = card('Accuracy', pct(t.accuracy)) + card('Precision', pct(t.precision)) + card('Recall', pct(t.recall)) + card('F1 score', pct(t.f1));
+        document.getElementById('modelNote').innerText = `Confusion matrix (test): TP ${c.tp}, TN ${c.tn}, FP ${c.fp}, FN ${c.fn}. ${m.note}`;
+      } catch { document.getElementById('modelSub').innerText = 'Evaluation results unavailable (backend not reachable).'; }
+    }
+    function setOnline(ok) {
+      document.getElementById('apiDotIcon').className = 'w-2.5 h-2.5 rounded-full ' + (ok ? 'bg-indiagreen-400' : 'bg-red-500');
+      document.getElementById('apiDotText').innerText = ok ? 'Backend online' : 'Backend offline';
+      document.getElementById('offlineBanner').classList.toggle('hidden', ok);
+    }
+    (async function init() {
+      try { const h = await (await fetch(API + '/api/health')).json(); setOnline(true); if (!h.model_loaded) showError('Model file missing. Run python train_model.py in the backend folder.'); }
+      catch { setOnline(false); }
+      loadReports(); loadStats(); loadModelInfo();
+    })();
+  </script>
+</body>
+</html>
